@@ -14,9 +14,9 @@ class ButtonActor extends Actor with IObservable {
     case RemoveObserverMessage(o : ActorRef) => removeObserver(o)
   }
 
-  def registerObserver(observer : ActorRef) = observers + observer
-  def removeObserver(observer : ActorRef) = observers - observer
-  def notifyObservers() = observers.foreach((o : ActorRef) => o ! NotifyPushMessage)
+  def registerObserver(observer : ActorRef) = observers += observer
+  def removeObserver(observer : ActorRef) = observers -= observer
+  def notifyObservers = observers.foreach((o : ActorRef) => o ! NotifyPushMessage)
 }
 
 object ButtonActor {
