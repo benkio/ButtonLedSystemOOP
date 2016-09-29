@@ -13,19 +13,23 @@ class ButtonActorSpec(system: ActorSystem) extends TestKit(system) with AkkaScal
   def this() = this(ActorSystem("ButtonActorSpec"))
 
 
-  "the button Actor" should {
+  "the Button Actor" should {
     "notify the observer with exactly one message" in {
       val button = system.actorOf(Props[ButtonActor])
       button ! ButtonActor.RegisterObserverMessage(self)
-      button ! ButtonActor.PushMessage
-      expectMsg(ButtonActor.NotifyPushMessage)
+      for (i <- 1 to 10) {
+        button ! ButtonActor.PushMessage
+        expectMsg(ButtonActor.NotifyPushMessage)
+      }
       expectNoMsg(1 second)
+      button ! ButtonActor.RemoveObserverMessage(self)
       ok
     }
 
     "send no message to removed observers" in {
       val button = system.actorOf(Props[ButtonActor])
       button ! ButtonActor.PushMessage
+      button ! ButtonActor.RegisterObserverMessage(self)
       button ! ButtonActor.RegisterObserverMessage(self)
       button ! ButtonActor.RemoveObserverMessage(self)
       button ! ButtonActor.PushMessage
