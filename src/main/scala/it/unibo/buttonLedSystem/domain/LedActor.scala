@@ -8,8 +8,8 @@ class LedActor extends Actor {
   var on: Boolean = false
 
   def receive = {
-  	case SwitchMessage =>
-  	 switch
+  	case SwitchMessage => switch
+    case Status => sender() ! on
   }
 
   def switch = on = !on
@@ -18,4 +18,5 @@ class LedActor extends Actor {
 object LedActor {
   val props = Props[LedActor]
   case object SwitchMessage
+  case object Status
 }
