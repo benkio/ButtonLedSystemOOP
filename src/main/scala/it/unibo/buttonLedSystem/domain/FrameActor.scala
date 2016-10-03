@@ -13,19 +13,38 @@ import akka.actor.ActorRef
 class FrameActor extends Actor {
   import FrameActor._
 
+  val led = new JLabel("Off")
+
   def receive = {
     case DisplayMainFrame(b : ActorRef) => {
       val mainframe = createMainFrame(b)
       showMainFrame(mainframe)
     }
+    case LoggerActor.LedStatusChangedMessage(status : Boolean) =>
+      SwingUtilities.invokeLater(new Runnable {
+                                   def run {
+                                     if (status){
+                                       led.setForeground(Color.GREEN)
+                                       led.setText("On")
+                                     }
+                                     else{
+                                       led.setForeground(Color.RED)
+                                       led.setText("Off")
+                                     }
+                                   }
+                                 })
 
   }
 
   def createMainFrame(b : ActorRef) : JFrame = {
     // JPanel
-    val pnlButton = new JPanel();
+    val pnlButton = new JPanel()
     //  Buttons
-    val btn = new JButton("Turn the Led");
+    val btn = new JButton("Turn the Led")
+
+    val ledStatusDescription = new JLabel("Led Status: ")
+
+    led.setForeground(Color.red);
 
     val mainFrame = new JFrame {
       btn.addActionListener(new ActionListener()
@@ -34,18 +53,20 @@ class FrameActor extends Actor {
                                 {
                                   b ! ButtonActor.PushMessage
                                 }
-                              });
+                              })
 
       // Adding to JFrame
-      pnlButton.add(btn);
-      add(pnlButton);
+      pnlButton.add(btn)
+      pnlButton.add(ledStatusDescription)
+      pnlButton.add(led)
+      add(pnlButton)
       // JFrame properties
-      setSize(400, 400);
-      setBackground(Color.BLACK);
-      setTitle("Button Led Subsystem");
-      setLocationRelativeTo(null);
-      setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      setVisible(true);
+      setSize(200, 100)
+      setBackground(Color.BLACK)
+      setTitle("Button Led Subsystem")
+      setLocationRelativeTo(null)
+      setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
+      setVisible(true)
     }
 
     mainFrame

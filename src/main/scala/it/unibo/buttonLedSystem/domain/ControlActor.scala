@@ -20,7 +20,10 @@ class ControlActor() extends Actor {
       led ! LedActor.SwitchMessage
       led ! LedActor.Status
     }
-    case (on : Boolean) => logger ! LoggerActor.LedStatusChangedMessage(on)
+    case (on : Boolean) => {
+      logger ! LoggerActor.LedStatusChangedMessage(on)
+      frameActor ! LoggerActor.LedStatusChangedMessage(on)
+    }
   }
 }
 
